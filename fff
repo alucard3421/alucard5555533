@@ -1,0 +1,106 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+    local Window = Rayfield:CreateWindow({
+   Name = "alucard",
+   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   LoadingTitle = "alucard",
+   LoadingSubtitle = "by alucard",
+   Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+   ConfigurationSaving = {
+      Enabled = false,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "alucard"
+   },
+
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
+
+   KeySystem = true, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "alucard",
+      Subtitle = "Key System",
+      Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
+      FileName = "alucard", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      SaveKey = false, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"https://pastebin.com/raw/TGtTFdcs"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+   }
+})
+
+local mainTab = Window:CreateTab("home", nil) -- Title, Image
+local mainSection = mainTab:CreateSection("main")
+
+Rayfield:Notify({
+   Title = "alucard",
+   Content = "alucard",
+   Duration = 5,
+   Image = nil,
+})
+
+local Button = mainTab:CreateButton({
+   Name = "highlight",
+   Callback = function()
+ -- Services
+local Players = game:GetService("Players")
+
+-- Function to highlight a player's character
+local function highlightPlayer(player)
+    local character = player.Character
+    if character then
+        -- Check if the character already has a Highlight object
+        local existingHighlight = character:FindFirstChild("Highlight")
+        if not existingHighlight then
+            -- Create a new Highlight object
+            local highlight = Instance.new("Highlight")
+            highlight.Parent = character
+            highlight.FillColor = Color3.new(0, 1, 0) -- Green color
+            highlight.OutlineColor = Color3.new(1, 1, 0) -- Yellow outline
+            highlight.FillTransparency = 0.5 -- Semi-transparent
+        end
+    end
+end
+
+-- Function to handle player added event
+local function onPlayerAdded(player)
+    -- Highlight the player when they join
+    highlightPlayer(player)
+
+    -- Listen for character added events (in case the player respawns)
+    player.CharacterAdded:Connect(function()
+        highlightPlayer(player)
+    end)
+end
+
+-- Highlight all existing players
+for _, player in ipairs(Players:GetPlayers()) do
+    onPlayerAdded(player)
+end
+
+-- Listen for new players joining
+Players.PlayerAdded:Connect(onPlayerAdded)
+   end,
+})
+
+local Button = mainTab:CreateButton({
+   Name = "fly",
+   Callback = function()
+  loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+   end,
+})
+
+local Button = mainTab:CreateButton({
+   Name = "buang",
+   Callback = function()
+local Button = Tab:CreateButton({
+   Name = "Button Example",
+   Callback = function()
+   -- The function that takes place when the button is pressed
+   end,
+})
