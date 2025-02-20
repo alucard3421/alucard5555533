@@ -1,0 +1,81 @@
+-- Highlight all players in the game
+local function highlightPlayer(character)
+    if character and not character:FindFirstChild("Highlight") then
+        local highlight = Instance.new("Highlight")
+        highlight.Parent = character
+        highlight.FillColor = Color3.fromRGB(255, 255, 0) -- Yellow color
+        highlight.OutlineColor = Color3.fromRGB(255, 0, 0) -- Red outline
+        highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop -- Always visible
+        highlight.FillTransparency = 0.5 -- Semi-transparent highlight
+        highlight.OutlineTransparency = 0 -- Fully visible outline
+    end
+    
+    if character and not character:FindFirstChild("BillboardGui") then
+        local billboard = Instance.new("BillboardGui")
+        billboard.Parent = character
+        billboard.Adornee = character:FindFirstChild("Head")
+        billboard.Size = UDim2.new(4, 0, 1, 0)
+        billboard.StudsOffset = Vector3.new(0, 2, 0)
+        billboard.AlwaysOnTop = true
+        
+        local textLabel = Instance.new("TextLabel")
+        textLabel.Parent = billboard
+        textLabel.Size = UDim2.new(1, 0, 1, 0)
+        textLabel.BackgroundTransparency = 1
+        textLabel.Text = character.Parent.Name
+        textLabel.TextColor3 = Color3.new(1, 1, 1)
+        textLabel.TextScaled = true
+        textLabel.Font = Enum.Font.SourceSansBold
+    end
+end
+
+-- Apply highlight to all existing players
+for _, player in pairs(game.Players:GetPlayers()) do
+    if player.Character then
+        highlightPlayer(player.Character)
+    end
+end
+
+-- Listen for new players joining and apply highlight
+game.Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        highlightPlayer(character)
+    end)
+end)
+
+-- Function to remove highlight from a character
+local function removeHighlight(character)
+    local highlight = character:FindFirstChild("Highlight")
+    if highlight then
+        highlight:Destroy()
+    end
+    
+    local billboard = character:FindFirstChild("BillboardGui")
+    if billboard then
+        billboard:Destroy()
+    end
+end
+
+-- Listen for player leaving and remove highlight
+game.Players.PlayerRemoving:Connect(function(player)
+    if player.Character then
+        removeHighlight(player.Character)
+    end
+end)
+
+-- Reapply highlight when character respawns
+game.Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        highlightPlayer(character)
+    end)
+end)
+
+-- Periodically check and ensure all players are highlighted
+while true do
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player.Character then
+            highlightPlayer(player.Character)
+        end
+    end
+    wait(5) -- Recheck every 5 seconds
+end
