@@ -1,54 +1,42 @@
--- Get the Players service
-local Players = game:GetService("Players")
+-- HighlightPlayersScript.lua
 
--- Function to highlight a player's character and add a nametag
-local function highlightPlayer(player)
-    local character = player.Character or player.CharacterAdded:Wait()
-    
-    -- Create a Highlight object
+-- Create a new Highlight instance for each player
+local function createHighlight(player)
     local highlight = Instance.new("Highlight")
-    highlight.Parent = character
-    highlight.FillTransparency = 0.5 -- Adjust transparency as needed
-    highlight.OutlineTransparency = 0 -- Adjust outline transparency as needed
-    highlight.FillColor = Color3.new(0, 1, 0) -- Green fill color, change as needed
-    highlight.OutlineColor = Color3.new(1, 1, 0) -- Yellow outline, change as needed
-
-    -- Create a BillboardGui for the nametag
-    local billboardGui = Instance.new("BillboardGui")
-    billboardGui.Adornee = character:FindFirstChild("Head") -- Attach to the player's head
-    billboardGui.Size = UDim2.new(0, 200, 0, 50) -- Size of the GUI
-    billboardGui.StudsOffset = Vector3.new(0, 2.5, 0) -- Position above the head
-    billboardGui.AlwaysOnTop = true -- Ensure it's always visible
-    billboardGui.LightInfluence = 0 -- Unaffected by lighting
-    billboardGui.Parent = character
-
-    -- Create a TextLabel for the nametag
-    local textLabel = Instance.new("TextLabel")
-    textLabel.Text = player.Name -- Set the text to the player's name
-    textLabel.Size = UDim2.new(1, 0, 1, 0) -- Fill the entire BillboardGui
-    textLabel.TextColor3 = Color3.new(1, 1, 1) -- White text
-    textLabel.BackgroundTransparency = 1 -- Transparent background
-    textLabel.Font = Enum.Font.SourceSansBold -- Bold font
-    textLabel.TextSize = 20 -- Font size
-    textLabel.Parent = billboardGui
+    highlight.Adornee = player.Character
+    highlight.FillColor = Color3.fromRGB(255, 255, 0)
+    highlight.OutlineColor = Color3.fromRGB(0, 0, 0)
+    highlight.OutlineTransparency = 0
+    highlight.FillTransparency = 0.5
+    highlight.Parent = player.Character
 end
 
--- Function to handle when a player's character is added
-local function onCharacterAdded(player)
-    highlightPlayer(player)
+-- Add highlight to all current players
+local function highlightAllPlayers()
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player.Character then
+            createHighlight(player)
+        end
+    end
 end
 
--- Loop through all players and highlight their characters
-for _, player in ipairs(Players:GetPlayers()) do
-    highlightPlayer(player)
-    player.CharacterAdded:Connect(function()
-        onCharacterAdded(player)
-    end)
-end
-
--- Handle new players joining the game
-Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function()
-        onCharacterAdded(player)
+-- Highlight new players that join the game
+game.Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        createHighlight(player)
     end)
 end)
+
+-- Remove highlight from players that leave the game
+game.Players.PlayerRemoving:Connect(function(player)
+    if player.Character then
+        for _, child in pairs(player.Character:GetChildren()) do
+            if child:IsA("Highlight") then
+                child:Destroy()
+            end
+        end
+    end
+end)
+
+-- Initial highlight for all players currently in the game
+highlightAllPlayers()
